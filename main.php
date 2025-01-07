@@ -151,6 +151,9 @@ function checkInput($input) {
 
 function main(){
     $exit  = false;
+    if (!file_exists("task.json")) {
+        file_put_contents("task.json", json_encode([], JSON_PRETTY_PRINT));
+    }
     echo "WELCOME TO TASK MANAGER \n";
 
     while (!$exit) {
