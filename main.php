@@ -91,6 +91,44 @@ function updateTask($input){
     return false;
 }
 
+function deleteTask($input){
+    if($input[0] == null || intval($input[0]) < 1){
+        printInvalidCommand();
+        return false;
+    }
+
+    $id = $input[0];
+
+    $json = file_get_contents("task.json");
+    $data = json_decode($json, true);
+
+    if ($data === null || empty($data)) {
+        echo "No hay tareas para mostrar.\n";
+        return;
+    }
+
+    $datacopy = [];
+    $exist = false;
+
+    foreach($data as $task){
+        if($task['id'] != $id){
+            $datacopy[] = $task;
+        }else{
+            $exist = true;
+        }
+    }
+
+    if(!$exist){
+        echo "No existe la tarea. \n";
+        return false;
+    }
+
+    $json = json_encode($datacopy, JSON_PRETTY_PRINT);
+    file_put_contents("task.json", $json);
+    echo "Tarea eliminada exitosamente.\n";
+    return false;
+}
+
 function exitProgram() {
     echo "Bye!\n";
     return true;
@@ -105,6 +143,7 @@ function checkInput($input) {
         "add" => addTask(array_slice($input, 1)),
         "list" => listTasks(),
         "update" => updateTask(array_slice($input, 1)),
+        "delete" => deleteTask(array_slice($input, 1)),
         "exit" => exitProgram(),
         default => printInvalidCommand(),
     };
