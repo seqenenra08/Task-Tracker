@@ -1,35 +1,55 @@
 <?php
 
-function addTask($input){
-    $task = $input[1];
-    if ($task == null) {
+function addTask($input) {
+    $description = implode(" ", $input);
+
+    if ($description == null || ($description[0] != "\"" || $description[strlen($description) - 1] != "\"")) {
         echo "Invalid task\n";
         return;
     }
-    $arraydata = [];
-    $arraydata['id'] = rand(1, 10000);
-    $arraydata['description'] = $task;
-    $arraydata['status'] = 'to do';
-    $arraydata['createAt'] = date('Y-m-d H:i:s');
-    $arraydata['updateAt'] = date('Y-m-d H:i:s');
-    $task = json_encode($arraydata);
+
+    $description = substr($description, 1, -1);
+    $arraydata = [
+        'id' => rand(1, 10000),
+        'description' => $description,
+        'status' => 'to do',
+        'createAt' => date('Y-m-d H:i:s'),
+        'updateAt' => date('Y-m-d H:i:s')
+    ];
 
     $json = file_get_contents("task.json");
     $data = json_decode($json, true);
-    $data[] = $task;
-    $json = json_encode($data);
+
+    if ($data === null) {
+        $data = [];
+    }
+
+    $data[] = $arraydata;
+
+    $json = json_encode($data, JSON_PRETTY_PRINT);
     file_put_contents("task.json", $json);
+    echo "Tarea agregada exitosamente.\n";
 }
 
-function listTasks($input){
+function listTasks() {
     $json = file_get_contents("task.json");
-    $data = json_decode($json);
-    foreach($data as $key => $task){
-        echo $key + 1 . ". " . $task . "\n";
+    $data = json_decode($json, true);
+
+    if ($data === null || empty($data)) {
+        echo "No hay tareas para mostrar.\n";
+        return;
+    }
+
+    foreach ($data as $index => $task) {
+        echo "Tarea " . ($index + 1) . ":\n";
+        foreach ($task as $key => $value) {
+            echo "  $key: $value\n";
+        }
+        echo "---------------------\n";
     }
 }
 
-function exitProgram(){
+function exitProgram() {
     echo "Bye!\n";
     return true;
 }
@@ -38,22 +58,24 @@ function printInvalidCommand() {
     echo "Invalid command\n";
 }
 
-function checkInput($input){
+function checkInput($input) {
     return match ($input[0]) {
-        "add" => addTask($input),
-        "list" => listTasks($input),
+        "add" => addTask(array_slice($input, 1)),
+        "list" => listTasks(),
         "exit" => exitProgram(),
         default => printInvalidCommand(),
     };
 }
 
-$exit  = false;
-echo "WELCOME TO TASK MANAGER \n";
+function main(){
+    $exit  = false;
+    echo "WELCOME TO TASK MANAGER \n";
 
-while(!$exit){
-    $inputUSer = readline();
-    $inputUSer = explode(" ", $inputUSer);
-    $exit = checkInput($inputUSer);
+    while (!$exit) {
+        $inputUser = readline("> ");
+        $inputUser = explode(" ", $inputUser);
+        $exit = checkInput($inputUser);
+    }
 }
 
-
+main();
