@@ -32,7 +32,14 @@ function addTask($input) {
     return false;
 }
 
-function listTasks() {
+function listTasks($input) {
+    $status = implode(" ", $input);
+    echo $status;
+    if($status != null && ($status != "done" && $status != "todo"  && $status != "in-progress" )){
+        printInvalidCommand();
+        return false;
+    }
+
     $json = file_get_contents("task.json");
     $data = json_decode($json, true);
 
@@ -40,13 +47,17 @@ function listTasks() {
         echo "No hay tareas para mostrar.\n";
         return;
     }
+    
+    $status = $status == "todo" ? "to do" : $status;
 
     foreach ($data as $index => $task) {
-        echo "Tarea " . ($index + 1) . ":\n";
-        foreach ($task as $key => $value) {
-            echo "  $key: $value\n";
+        if($status == null || $task['status'] == $status){
+            echo "Tarea " . ($index + 1) . ":\n";
+            foreach ($task as $key => $value) {
+                echo "  $key: $value\n";
+            }
+            echo "---------------------\n";
         }
-        echo "---------------------\n";
     }
 
     return false;
@@ -132,7 +143,7 @@ function deleteTask($input){
 function markInProgress($input){
     $id = implode("", $input);
     
-    if (!ctype_digit($input)) {
+    if (!ctype_digit($id)) {
         printInvalidCommand();
         return false;
     }
@@ -155,7 +166,7 @@ function markInProgress($input){
 
     foreach($data as &$task){
         if($task['id'] == $id){
-            $task['status'] = "done";
+            $task['status'] = "in-progress";
             $exist = true;
         }
     }
@@ -174,7 +185,7 @@ function markInProgress($input){
 function markDone($input){
     $id = implode("", $input);
 
-    if (!ctype_digit($input)) {
+    if (!ctype_digit($id)) {
         printInvalidCommand();
         return false;
     }
@@ -225,7 +236,7 @@ function printInvalidCommand() {
 function checkInput($input) {
     return match ($input[0]) {
         "add" => addTask(array_slice($input, 1)),
-        "list" => listTasks(),
+        "list" => listTasks(array_slice($input, 1)),
         "update" => updateTask(array_slice($input, 1)),
         "delete" => deleteTask(array_slice($input, 1)),
         "mark-in-progress" => markInProgress(array_slice($input, 1)),
