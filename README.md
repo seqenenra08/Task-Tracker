@@ -12,7 +12,7 @@ This project allows you to practice programming skills, including working with t
 - **Change Status**: Mark tasks as "in-progress" or "done".
 - **List Tasks**: 
   - List all tasks.
-  - Filter tasks by their status (`to do`, `in-progress`, `done`).
+  - Filter tasks by their status (`to-do`, `in-progress`, `done`).
   
 Tasks are stored in a `task.json` file in the project directory.
 
@@ -21,7 +21,7 @@ Tasks are stored in a `task.json` file in the project directory.
 Each task includes the following properties:
 - `id`: A unique identifier for the task.
 - `description`: A short description of the task.
-- `status`: The current status of the task (`to do`, `in-progress`, or `done`).
+- `status`: The current status of the task (`to-do`, `in-progress`, or `done`).
 - `createdAt`: The date and time when the task was created.
 - `updatedAt`: The date and time when the task was last updated.
 
@@ -131,7 +131,7 @@ list [status]
 list
 list done
 list in-progress
-list todo
+list to-do
 ```
 
 ---
