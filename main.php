@@ -74,7 +74,7 @@ function updateTask($input){
     $data = json_decode($json, true);
 
     if ($data === null || empty($data)) {
-        echo "No hay tareas para mostrar.\n";
+        echo "No hay tareas.\n";
         return;
     }
 
@@ -129,6 +129,90 @@ function deleteTask($input){
     return false;
 }
 
+function markInProgress($input){
+    $id = implode("", $input);
+    
+    if (!ctype_digit($input)) {
+        printInvalidCommand();
+        return false;
+    }
+
+    if($id == null || intval($id) < 1){
+        printInvalidCommand();
+        return false;
+    }
+
+    $id = intval($id);
+    $json = file_get_contents("task.json");
+    $data = json_decode($json, true);
+
+    if ($data === null || empty($data)) {
+        echo "No hay tareas.\n";
+        return;
+    }
+
+    $exist = false;
+
+    foreach($data as &$task){
+        if($task['id'] == $id){
+            $task['status'] = "done";
+            $exist = true;
+        }
+    }
+
+    if(!$exist){
+        echo "No existe la tarea. \n";
+        return false;
+    }
+
+    $json = json_encode($data, JSON_PRETTY_PRINT);
+    file_put_contents("task.json", $json);
+    echo "Tarea actualizada exitosamente.\n";
+    return false;
+}
+
+function markDone($input){
+    $id = implode("", $input);
+
+    if (!ctype_digit($input)) {
+        printInvalidCommand();
+        return false;
+    }
+
+    if($id == null || intval($id) < 1){
+        printInvalidCommand();
+        return false;
+    }
+
+    $id = intval($id);
+    $json = file_get_contents("task.json");
+    $data = json_decode($json, true);
+
+    if ($data === null || empty($data)) {
+        echo "No hay tareas.\n";
+        return;
+    }
+
+    $exist = false;
+
+    foreach($data as &$task){
+        if($task['id'] == $id){
+            $task['status'] = "done";
+            $exist = true;
+        }
+    }
+
+    if(!$exist){
+        echo "No existe la tarea. \n";
+        return false;
+    }
+
+    $json = json_encode($data, JSON_PRETTY_PRINT);
+    file_put_contents("task.json", $json);
+    echo "Tarea actualizada exitosamente.\n";
+    return false;
+}
+
 function exitProgram() {
     echo "Bye!\n";
     return true;
@@ -144,6 +228,8 @@ function checkInput($input) {
         "list" => listTasks(),
         "update" => updateTask(array_slice($input, 1)),
         "delete" => deleteTask(array_slice($input, 1)),
+        "mark-in-progress" => markInProgress(array_slice($input, 1)),
+        "mark-done" => markDone(array_slice($input, 1)),
         "exit" => exitProgram(),
         default => printInvalidCommand(),
     };
