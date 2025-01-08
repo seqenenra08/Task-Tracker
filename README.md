@@ -50,6 +50,7 @@ list [status]
 **Example:**
 ```bash
 list
+list todo
 list done
 list in-progress
 ```
