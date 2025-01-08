@@ -12,7 +12,7 @@ function addTask($input) {
     $arraydata = [
         'id' => rand(1, 10000),
         'description' => $description,
-        'status' => 'to do',
+        'status' => 'to-do',
         'createAt' => date('Y-m-d H:i:s'),
         'updateAt' => date('Y-m-d H:i:s')
     ];
@@ -34,8 +34,8 @@ function addTask($input) {
 
 function listTasks($input) {
     $status = implode(" ", $input);
-    echo $status;
-    if($status != null && ($status != "done" && $status != "todo"  && $status != "in-progress" )){
+    
+    if($status != null && ($status != "done" && $status != "to-do"  && $status != "in-progress" )){
         printInvalidCommand();
         return false;
     }
@@ -47,8 +47,6 @@ function listTasks($input) {
         echo "No hay tareas para mostrar.\n";
         return;
     }
-    
-    $status = $status == "todo" ? "to do" : $status;
 
     foreach ($data as $index => $task) {
         if($status == null || $task['status'] == $status){
