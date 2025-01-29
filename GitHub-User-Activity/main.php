@@ -1,6 +1,14 @@
 <?php
 
-function getContent($username) {
+function newEvent(&$events, $event) {
+    if (isset($events[$event])) {
+        $events[$event]++;     
+    } else {
+        $events[$event] = 1;
+    }
+}
+
+function getContent($username, &$events) {
     $api = "https://api.github.com/users/" . $username . "/events";
 
     $options = [
@@ -22,16 +30,20 @@ function getContent($username) {
     }
 
     $data = json_decode($data, true);
-    echo "<pre>";
-    print_r($data);
-    echo "</pre>";
+
+    foreach($data as $activity) {
+        newEvent($events, $activity["type"] . " - " . $activity["repo"]["name"]);
+    } 
+
+    print_r($events); 
 }
 
-function main(){
+function main() {
+    $events = [];
     echo "> WELCOME TO GITHUB USER ACTIVITY \n";
     echo "> ENTER YOUR GITHUB USERNAME \n";
     $username = readline("> github-activity ");
-    if($username != null) getContent($username);
+    if ($username != null) getContent($username, $events);
 }
 
 main();
